@@ -18,10 +18,12 @@ int main(){
 	auto t1 = std::thread(threadFun, 1, LogLevel::Debug);
 	auto t2 = std::thread(threadFun, 2, LogLevel::Info);
 	auto t3 = std::thread(threadFun, 3, LogLevel::Warn);
+	auto t4 = std::thread(threadFun, 4, LogLevel::Error);
 
 	t1.join();
 	t2.join();
 	t3.join();
+	t4.join();
 	//log.logClose();
 	return 0;
 }

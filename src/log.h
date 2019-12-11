@@ -23,12 +23,12 @@ extern const std::string default_file;
 class Logger{
 public:
 	explicit Logger(
-			LogLevel level, 
 			bool log = false,
+			LogLevel level = LogLevel::Error, 
 			std::string file = default_file, 
 			bool sync = true)
-		:_level(level), 
-		_log(log),
+		:_log(log),
+		_level(level), 
 		_file(file), 
 		_sync(sync) {
 			loadConfig();
@@ -98,8 +98,8 @@ private:
 		}
 
 private:
-	LogLevel _level;	// 日志等级
 	bool _log;			// 日志启动标志
+	LogLevel _level;	// 日志等级
 	std::mutex _mutex;	// 日志记录锁互斥量
 	std::string _file;	// 日志记录文件名
 	std::ofstream _ofs; // 日志记录文件流

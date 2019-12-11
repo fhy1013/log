@@ -6,7 +6,7 @@
 
 const std::string default_file = "./run.log"; // 默认日志文件名
 
-Logger g_log(LogLevel::Info);
+Logger g_log;
 
 static std::string logLeveltoString(const LogLevel &level){
 	std::string level_str = "";
@@ -33,10 +33,28 @@ static std::string logLeveltoString(const LogLevel &level){
 }
 
 void Logger::loadConfig(){
-	std::string log;
 	Config config(g_config_file);
+
+	// 日志启动标志
+	std::string log;
 	log = config.Read("log",log);
-	_log = (std::stoi(log) == 0) ? false : true;
+	_log = (log.length() > 0) ? ((std::stoi(log) == 0) ? false : true) : false;
+
+	// 日志等级
+	std::string level;
+	level = config.Read("log_level", level);
+	if(level == "Error")
+		_level = LogLevel::Error;
+	else if(level == "Warn")
+		_level = LogLevel::Warn;
+	else if(level == "Info")
+		_level = LogLevel::Info;
+	else if(level == "Debug")
+		_level = LogLevel::Debug;
+	else if(level == "Trace")
+		_level = LogLevel::Trace;
+	else
+		_level = LogLevel::Error;
 }
 
 // 描述：

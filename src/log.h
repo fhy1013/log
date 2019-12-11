@@ -93,7 +93,8 @@ private:
 		}
 	template<typename T, typename... Tn>
 		void logExpand(std::string &str, const T &t, const Tn &... args){
-			str += (t + " ");
+			std::string tmp(t);
+			str += (tmp + " ");
 			logExpand(str, args...);
 		}
 

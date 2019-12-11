@@ -7,7 +7,7 @@ void threadFun(const int id, const LogLevel level){
 	std::cout<<"thread " << id << "start... "<< std::this_thread::get_id() << std::endl;
 	int count = 100;
 	while(--count > 0){
-		Log(level, "thread " + std::to_string(id) + ": " + std::to_string(count));
+		Log(level, "thread ", std::to_string(id), ": ", std::to_string(count));
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
 }

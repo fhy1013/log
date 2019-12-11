@@ -1,6 +1,8 @@
 #ifndef __LOG_H__
 #define __LOG_H__
 
+#include "config.h"
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -16,25 +18,32 @@ enum LogLevel{
     Trace      // 详细信息
 };
 
-const std::string default_file = "./run.log"; // 默认日志文件名
+extern const std::string default_file;
 
 class Logger{
 public:
 	explicit Logger(
 			LogLevel level, 
+			bool log = false,
 			std::string file = default_file, 
 			bool sync = true)
 		:_level(level), 
+		_log(log),
 		_file(file), 
 		_sync(sync) {
+			loadConfig();
 			if(_file == default_file){
 				_file = generateLogFile();
 			}
-			if(!fileOpen(_file, std::ios::out | std::ios::trunc)){
-				std::cout<<"open log file error";
+			if(_log){
+				if(!fileOpen(_file, std::ios::out | std::ios::trunc)){
+					std::cout<<"open log file error";
+				}
 			}
 		}
 	~Logger(){}
+
+	void loadConfig();
 
 	// 设置日志记录文件名
 	//bool setLogFile(std::string &file){ _file = file; }
@@ -48,10 +57,13 @@ public:
 	// 写日志
 	template<typename... Aargs>
 		bool log(const LogLevel level, const char *file, const int line, const Aargs&... args){
-			std::string str_file = file;
-			std::string str = str_file + " "+ std::to_string(line) + " ";
-			logExpand(str, args...);
-			return logWrite(level, str);
+			if(_log){
+				std::string str_file = file;
+				std::string str = str_file + " "+ std::to_string(line) + " ";
+				logExpand(str, args...);
+				return logWrite(level, str);
+			}else
+				return false;
 		}
 
 	// 日志初始化
@@ -87,6 +99,7 @@ private:
 
 private:
 	LogLevel _level;	// 日志等级
+	bool _log;			// 日志启动标志
 	std::mutex _mutex;	// 日志记录锁互斥量
 	std::string _file;	// 日志记录文件名
 	std::ofstream _ofs; // 日志记录文件流
@@ -96,6 +109,7 @@ private:
 	std::vector<std::string> _log_vec;
 	int _log_vec_len;
 };
+
 extern Logger g_log;
 #define Log(level, ...) g_log.log(level, __FILE__, __LINE__, __VA_ARGS__)
 

@@ -4,6 +4,8 @@
 #include <sstream>
 #include <iomanip>
 
+const std::string default_file = "./run.log"; // 默认日志文件名
+
 Logger g_log(LogLevel::Info);
 
 static std::string logLeveltoString(const LogLevel &level){
@@ -28,6 +30,13 @@ static std::string logLeveltoString(const LogLevel &level){
 			break;
 	}
 	return level_str;
+}
+
+void Logger::loadConfig(){
+	std::string log;
+	Config config(g_config_file);
+	log = config.Read("log",log);
+	_log = (std::stoi(log) == 0) ? false : true;
 }
 
 // 描述：

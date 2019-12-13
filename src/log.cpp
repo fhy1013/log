@@ -8,7 +8,23 @@ const std::string default_file = "./run.log"; // 默认日志文件名
 
 Logger g_log;
 
-static std::string logLeveltoString(const LogLevel &level){
+Logger::Logger(bool log, LogLevel level, std::string file):_log(log), 
+	_level(level), _file(file){
+	loadConfig();
+	if(_file == default_file){
+		_file = generateLogFile();
+	}
+	if(_log){
+		if(!fileOpen(_file, std::ios::out | std::ios::trunc)){
+			std::cout<<"open log file error";
+		}else{
+//			std::cout<< " open log file " << _file << " success"<< std::endl;
+		}
+	}
+}
+
+
+std::string Logger::logLeveltoString(const LogLevel &level){
 	std::string level_str = "";
 	switch(level){
 		case LogLevel::Error:
@@ -25,8 +41,6 @@ static std::string logLeveltoString(const LogLevel &level){
 			break;
 		case LogLevel::Trace:
 			level_str = "Trace ";
-			break;
-		default:
 			break;
 	}
 	return level_str;
@@ -58,35 +72,6 @@ void Logger::loadConfig(){
 }
 
 // 描述：
-//      将msg信息写入日志文件
-// 参数：
-//      msg     I   日志信息
-// 返回值：
-//      false   写入日志失败
-//      true    写入日志成功
-bool Logger::logWrite(const LogLevel level, const std::string &msg){
-	if(_level >= level){
-		std::unique_lock<std::mutex> lck(_mutex);
-		if(_sync){
-			if(!fileWrite( currentTime() + logLeveltoString(level) + msg)){
-				return false;
-			}
-		}else{
-			_log_vec_len += msg.length();
-			_log_vec.push_back(currentTime() + logLeveltoString(level) + msg);
-			if(_log_vec_len > _log_length){
-				if(!fileWrite(_log_vec)){
-					return false;
-				}
-				_log_vec.clear();
-				_log_vec_len = 0;
-			}
-		}
-	}
-	return true;
-}
-
-// 描述：
 //      打开文件
 // 参数：
 //      file    I   打开文件文件名
@@ -109,29 +94,7 @@ bool Logger::fileOpen(const std::string &file, std::ios::openmode mode){
 bool Logger::logClose(){
 	std::unique_lock<std::mutex> lck(_mutex);
 	if(_ofs.is_open()){
-		if(!_log_vec.empty()){
-			fileWrite(_log_vec);
-			_log_vec.clear();
-			_log_vec_len = 0;
-		}
 		_ofs.close();
-	}
-	return true;
-}
-
-bool Logger::fileWrite(const std::string &msg){
-	if(_ofs.is_open()){
-		_ofs << msg <<std::endl;
-	}else{
-		return false;
-	}
-	return true;
-}
-
-bool Logger::fileWrite(const std::vector<std::string> &msg){
-	for(auto &e : msg){
-		if(!fileWrite(e))
-			return false;
 	}
 	return true;
 }

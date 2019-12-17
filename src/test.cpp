@@ -3,14 +3,16 @@
 #include <string>
 #include <iostream>
 
-void threadFun(const int id, const LogLevel level){
-	std::cout<<"thread " << id << "start... "<< std::this_thread::get_id() << std::endl;
-	int count = 100;
-	while(--count > 0){
-		//Log(level, "thread ", std::to_string(id), ": ", std::to_string(count) + "\n");
-		Log(level, "thread ", id, ": ", count, 1.3 * count);
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
-	}
+void threadFun(const int id, const LogLevel level) {
+    std::cout << "thread " << id << "start... " << std::this_thread::get_id()
+	      << std::endl;
+    int count = 100;
+    while (--count > 0) {
+	// Log(level, "thread ", std::to_string(id), ": ", std::to_string(count)
+	// + "\n");
+	Log(level, "thread ", id, ": ", count, 1.3 * count);
+	std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
 }
 
 int main(){

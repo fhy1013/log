@@ -46,29 +46,29 @@ std::string Logger::logLeveltoString(const LogLevel &level){
 	return level_str;
 }
 
-void Logger::loadConfig(){
-	Config config(g_config_file);
+void Logger::loadConfig() {
+    Config config(g_config_file);
 
-	// 日志启动标志
-	std::string log;
-	log = config.Read("log",log);
-	_log = (log.length() > 0) ? ((std::stoi(log) == 0) ? false : true) : false;
+    // 日志启动标志
+    std::string log;
+    log = config.Read("log", log);
+    _log = (log.length() > 0) ? ((std::stoi(log) == 0) ? false : true) : false;
 
-	// 日志等级
-	std::string level;
-	level = config.Read("log_level", level);
-	if(level == "Error")
-		_level = LogLevel::Error;
-	else if(level == "Warn")
-		_level = LogLevel::Warn;
-	else if(level == "Info")
-		_level = LogLevel::Info;
-	else if(level == "Debug")
-		_level = LogLevel::Debug;
-	else if(level == "Trace")
-		_level = LogLevel::Trace;
-	else
-		_level = LogLevel::Error;
+    // 日志等级
+    std::string level;
+    level = config.Read("log_level", level);
+    if (level == "Error")
+	_level = LogLevel::Error;
+    else if (level == "Warn")
+	_level = LogLevel::Warn;
+    else if (level == "Info")
+	_level = LogLevel::Info;
+    else if (level == "Debug")
+	_level = LogLevel::Debug;
+    else if (level == "Trace")
+	_level = LogLevel::Trace;
+    else
+	_level = LogLevel::Error;
 }
 
 // 描述：
@@ -79,43 +79,46 @@ void Logger::loadConfig(){
 // 返回值：
 //      false   打开文件失败
 //      true    打开文件成功
-bool Logger::fileOpen(const std::string &file, std::ios::openmode mode){
-	_ofs.open(file, mode);
-	if(!_ofs.is_open()){
-		return false;
-	}
-	return true;
+bool Logger::fileOpen(const std::string &file, std::ios::openmode mode) {
+    _ofs.open(file, mode);
+    if (!_ofs.is_open()) {
+	return false;
+    }
+    return true;
 }
 
 // 描述：
 //      关闭文件
 // 返回值：
 //      true    关闭文件成功
-bool Logger::logClose(){
-	std::unique_lock<std::mutex> lck(_mutex);
-	if(_ofs.is_open()){
-		_ofs.close();
-	}
-	return true;
+bool Logger::logClose() {
+    std::unique_lock<std::mutex> lck(_mutex);
+    if (_ofs.is_open()) {
+	_ofs.close();
+    }
+    return true;
 }
 
-std::string Logger::currentTime() const{
-	std::string format = "%Y-%m-%d %H:%M:%S";
-	return currentTime(format, true);
+std::string Logger::currentTime() const {
+    std::string format = "%Y-%m-%d %H:%M:%S";
+    return currentTime(format, true);
 }
 
-std::string Logger::currentTime(const std::string &format, const bool type) const{
-	auto now = std::chrono::system_clock::now();
-	auto now_t = std::chrono::system_clock::to_time_t(now);
-	std::stringstream ss;
-	ss << std::put_time(std::localtime(&now_t), format.c_str());
-	std::string now_str = ss.str();
-	if(type){
-		auto mill = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
-		return now_str + "." + std::to_string(mill - now_t*1000) + " ";
-	}else{
-		return now_str;
-	}
+std::string Logger::currentTime(const std::string &format,
+				const bool type) const {
+    auto now = std::chrono::system_clock::now();
+    auto now_t = std::chrono::system_clock::to_time_t(now);
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&now_t), format.c_str());
+    std::string now_str = ss.str();
+    if (type) {
+	auto mill = std::chrono::duration_cast<std::chrono::milliseconds>(
+			now.time_since_epoch())
+			.count();
+	return now_str + "." + std::to_string(mill - now_t * 1000) + " ";
+    } else {
+	return now_str;
+    }
 }
 
 std::string Logger::generateLogFile() const{

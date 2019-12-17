@@ -10,6 +10,7 @@
 // 配置文件
 extern const std::string g_config_file;
 
+
 /*
 * \brief Generic configuration Class
 *
@@ -60,14 +61,13 @@ protected:
     template<class T> static T string_as_T( const std::string& s );
     static void Trim( std::string& inout_s );
 
-
-    // Exception types
-public:
+   public:
     struct File_not_found {
-        std::string filename;
-        File_not_found( const std::string& filename_ = std::string() )
-            : filename(filename_) {} };
-        struct Key_not_found {  // thrown only by T read(key) variant of read()
+	std::string filename;
+	File_not_found( const std::string& filename_ = std::string() )
+            : filename(filename_) {}
+    };
+	struct Key_not_found {  // thrown only by T read(key) variant of read()
             std::string key;
             Key_not_found( const std::string& key_ = std::string() )
                 : key(key_) {} };
@@ -189,5 +189,6 @@ void Config::Add( const std::string& in_key, const T& value )
     m_Contents[key] = v;
     return;
 }
+
 
 #endif // CONFIG_H

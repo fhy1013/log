@@ -1,8 +1,6 @@
 #ifndef __LOG_H__
 #define __LOG_H__
 
-#include "config.h"
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -10,23 +8,25 @@
 #include <vector>
 #include <stdarg.h>
 
+#include "config.h"
+
 #define G_LOG_H
 
-enum LogLevel{
-    Error,     // 错误信息
-    Warn,      // 警告信息，不影响程序执行
-    Info,      // 业务信息
-    Debug,     // 调试信息
-    Trace      // 详细信息
+enum LogLevel {
+	Error,  // 错误信息
+	Warn,   // 警告信息，不影响程序执行
+	Info,   // 业务信息
+	Debug,  // 调试信息
+	Trace   // 详细信息
 };
 
 extern const std::string default_file;
 
 class Logger {
-   public:
-    explicit Logger(bool log = false, LogLevel level = LogLevel::Error,
-		    std::string file = default_file);
-    ~Logger() {}
+public:
+	explicit Logger(bool log = false, LogLevel level = LogLevel::Error,
+					std::string file = default_file);
+	~Logger() {}
 
     void loadConfig();
 
@@ -62,7 +62,7 @@ class Logger {
     // 日志关闭
     bool logClose();
 
-   private:
+private:
     bool fileOpen(const std::string &file, std::ios::openmode mode);
 
     // 获取当前系统时间
@@ -74,7 +74,7 @@ class Logger {
 
     std::string logLeveltoString(const LogLevel &level);
 
-   private:
+private:
     template <typename T>
     void logExpand(const T &t) {
 	_ofs << t;
@@ -85,14 +85,13 @@ class Logger {
 	logExpand(args...);
     }
 
-   private:
+private:
     bool _log;		 // 日志启动标志
     LogLevel _level;     // 日志等级
     std::mutex _mutex;   // 日志记录锁互斥量
     std::string _file;   // 日志记录文件名
-    std::ofstream _ofs;  // 日志记录文件流
-			 // bool _sync;				// 日志同步标志，true:
-    // 同步写入；false:异步写入
+    std::ofstream _ofs;  // 日志记录文件流 
+	// bool _sync;	// 日志同步标志，true:同步写入；false:异步写入
 
     // std::stringstream _ss;	// 数据暂存流
     // int _ss_len;			// 数据暂存流长度
